@@ -7,6 +7,7 @@ As Rancher2.0 is about to be released soon, this document will guide users to st
   - [Getting Started](#getting-started)
     - [Deploy Rancher](#deploy-rancher)
     - [Using Rke deploy cluster](#using-rke-deploy-cluster)
+    - [Setup cluster on Rancher](#setup-cluster-on-rancher)
 - [Recording incompatibility between RancherOS and Rancher](#recording-incompatibility-between-rancheros-and-rancher)
 
 # Start Rancher on RancherOS #
@@ -23,6 +24,7 @@ One of the nodes is used as both the etcd role and the controlplane role, others
 Notice that we deploy our rancher-server on controlplane node.
 
 ### Deploy Rancher ###
+In our example we use ros user-docker command, there are many alternatives such like(ros custom-service, ors system-service...).
 
 To install Rancher on your host, connect to it and then use a shell to install.
 ```bash
@@ -34,6 +36,19 @@ https://<SERVER_IP>:8443
 ```
 
 ### Using Rke deploy cluster ###
+
+
+Change all nodes' ros Docker engine to the version which rke recommendation, you can use `ros engine list` command to show which Docker engines are available to switch to:
+```bash
+ros engine list
+ros engine switch docker-17.03.2-ce
+```
+
+Because of ros default console has no curl module, so need to change controleplane node's ros default console to the ubuntu console, you can use `ros console list` command to list the available consoles.
+```bash
+ros console list
+ros console switch ubuntu
+```
 
 Download rke binary:
 ```bash
@@ -147,19 +162,45 @@ private_registries:
     password: <password>
 ```
 
-Change all nodes' ros Docker engine to the version which rke recommendation, you can use `ros engine list` command to show which Docker engines are available to switch to:
-```bash
-ros engine list
-ros engine switch docker-17.03.2-ce
-```
-
 Standing up a Kubernetes is as simple as creating a cluster.yml configuration file and running the command:
 ```bash
 ./rke up --config cluster.yml
 ```
 
+In our example, you need to install kubectl with curl command on controlplane node:
+```bash
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/bin
+```
+
+Set the kubeconf to the `~/.kube/conf`:
+```bash
+mkdir -p ~/.kube && mv kube_config_cluster.yml ~/.kube/conf
+```
+
+Test the cluster with the command below:
+```bash
+kubectl --kubeconfig='/root/.kube/conf' get nodes
+kubectl --kubeconfig='/root/.kube/conf' get pods --all-namespaces
+```
+
+### Setup cluster on Rancher ###
+Open a web browser and enter the IP address of your host and replace <SERVER_IP> with your host IP address:
+```bash
+https://<SERVER_IP>:8443
+```
+
+Click `add cluster` button and select import type. Input cluster name (Optional: input additional fields).
+
+
 # Recording incompatibility between RancherOS and Rancher #
 This Section will record incompatibility between RancherOS and Rancher2.0.
+
+- ros default docker version & ros default system-docker version don't match rke recommendation.
+- ros default console does not contain curl module which both rancher & install kubectl needs. 
+
+
+ 
+
 
 
 
