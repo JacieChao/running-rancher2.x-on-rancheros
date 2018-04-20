@@ -11,7 +11,7 @@ As Rancher2.0 is about to be released soon, this document will guide users to st
 - [Recording incompatibility between RancherOS and Rancher](#recording-incompatibility-between-rancheros-and-rancher)
 
 # Start Rancher on RancherOS #
-This Section will show you how to deploy Rancher2.0 on RancherOS. In our example, we use the aws virtual machine with the x86_64 architecture.
+This Section will show you how to deploy Rancher2.0 on RancherOS. In our example, we use the aws virtual machine(at least 4GB of memory) with the x86_64 architecture.
 
 ## Requirements ##
 - [RancherOS-v1.3.0](https://github.com/rancher/os/releases/v1.3.0)
@@ -24,7 +24,7 @@ One of the nodes is used as both the etcd role and the controlplane role, others
 Notice that we deploy our rancher-server on controlplane node.
 
 ### Deploy Rancher ###
-In our example we use ros user-docker command, there are many alternatives such like(ros custom-service, ors system-service...).
+In our example we use ros user-docker command, there are many alternatives such like(ros custom-service, ros system-service...).
 
 To install Rancher on your host, connect to it and then use a shell to install.
 ```bash
@@ -196,7 +196,8 @@ Click `add cluster` button and select import type. Input cluster name (Optional:
 This Section will record incompatibility between RancherOS and Rancher2.0.
 
 - ros default docker version & ros default system-docker version don't match rke recommendation.
-- ros default console does not contain curl module which both rancher & install kubectl needs. 
+- ros default console does not contain curl module which both rancher & install kubectl needs.
+- after the cluster was created successfully,restart nodes or switch console will cause cluster errors.
 
 
  
